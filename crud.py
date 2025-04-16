@@ -14,3 +14,11 @@ def create_short_url(db: Session, original_url: str) -> URL:
     db.commit()
     db.refresh(new_url)
     return new_url
+
+def get_url_by_code(db: Session, short_code: str) -> URL | None:
+    return db.scalar(select(URL).where(URL.short_code == short_code))
+
+def increment_access_count(db: Session, url_obj: URL):
+    url_obj.access_count += 1
+    db.commit()
+    db.refresh(url_obj)
