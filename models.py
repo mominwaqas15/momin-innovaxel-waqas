@@ -11,5 +11,5 @@ class URL(Base):
     url = Column(Text, nullable=False)
     short_code = Column(Text, unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     access_count = Column(Integer, default=0, nullable=False)

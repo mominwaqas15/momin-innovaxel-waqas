@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db_conn import create_db
 from schemas import URLCreate, URLUpdate, URLInfo, URLStats
 from fastapi.middleware.cors import CORSMiddleware
-from crud import create_short_url, get_url_by_code, increment_access_count, update_url, delete_url
+from crud import create_short_url, get_url_by_code, increment_access_count, update_url, delete_url, get_url_stats
 import models
 import uvicorn, os
 from sqlalchemy.orm import Session
@@ -61,6 +61,13 @@ def delete_shortened_url(short_code: str, db: Session = Depends(get_db)):
     deleted = delete_url(db, short_code)
     if not deleted:
         raise HTTPException(status_code=404, detail="Short URL not found")
+
+@app.get("/get-shorten-url-stats/{short_code}", response_model=URLStats)
+def stats(short_code: str, db: Session = Depends(get_db)):
+    url_obj = get_url_stats(db, short_code)
+    if not url_obj:
+        raise HTTPException(status_code=404, detail="Short URL not found")
+    return url_obj
 
 if __name__ == "__main__":
     uvicorn.run("init:app", host=HOST, port=int(PORT), reload=True)

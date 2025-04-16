@@ -39,3 +39,6 @@ def delete_url(db: Session, short_code: str) -> bool:
         db.commit()
         return True
     return False  
+
+def get_url_stats(db: Session, short_code: str) -> URL | None:
+    return get_url_by_code(db, short_code)
