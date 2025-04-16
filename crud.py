@@ -22,3 +22,12 @@ def increment_access_count(db: Session, url_obj: URL):
     url_obj.access_count += 1
     db.commit()
     db.refresh(url_obj)
+
+def update_url(db: Session, short_code: str, new_url: str) -> URL | None:
+    url_obj = get_url_by_code(db, short_code)
+    if url_obj:
+        url_obj.url = new_url
+        db.commit()
+        db.refresh(url_obj)
+        return url_obj
+    return None

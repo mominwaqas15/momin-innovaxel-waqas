@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db_conn import create_db
 from schemas import URLCreate, URLUpdate, URLInfo, URLStats
 from fastapi.middleware.cors import CORSMiddleware
-from crud import create_short_url, get_url_by_code, increment_access_count
+from crud import create_short_url, get_url_by_code, increment_access_count, update_url
 import models
 import uvicorn, os
 from sqlalchemy.orm import Session
@@ -36,17 +36,27 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/shorten", response_model=URLInfo)
+@app.post("/shorten-url", response_model=URLInfo)
 def shorten_url(payload: URLCreate, db: Session = Depends(get_db)):
     return create_short_url(db, original_url=str(payload.url))
 
-@app.get("/shorten/{short_code}", response_model=URLInfo)
+@app.get("/get-url-by-shorten-code/{short_code}", response_model=URLInfo)
 def retrieve_url(short_code: str, db: Session = Depends(get_db)):
     url_obj = get_url_by_code(db, short_code)
     if not url_obj:
         raise HTTPException(status_code=404, detail="Short URL not found")
     increment_access_count(db, url_obj)
     return url_obj
+
+# 3. Update short URL
+@app.put("/update-url-by-shorten-code/{short_code}", response_model=URLInfo)
+def update_shortened_url(short_code: str, payload: URLUpdate, db: Session = Depends(get_db)):
+    url_obj = update_url(db, short_code, str(payload.url))
+    if not url_obj:
+        raise HTTPException(status_code=404, detail="Short URL not found")
+    return url_obj
+
+
 
 if __name__ == "__main__":
     uvicorn.run("init:app", host=HOST, port=int(PORT), reload=True)
