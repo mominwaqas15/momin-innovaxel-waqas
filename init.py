@@ -8,8 +8,6 @@ import models
 import uvicorn, os
 from sqlalchemy.orm import Session
 
-
-
 engine, SessionLocal = create_db()
 models.Base.metadata.create_all(bind=engine)
 
@@ -36,11 +34,11 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/shorten-url", response_model=URLInfo)
+@app.post("/shorten", response_model=URLInfo)
 def shorten_url(payload: URLCreate, db: Session = Depends(get_db)):
     return create_short_url(db, original_url=str(payload.url))
 
-@app.get("/get-url-by-shorten-code/{short_code}", response_model=URLInfo)
+@app.get("/shorten/{code}", response_model=URLInfo)
 def retrieve_url(short_code: str, db: Session = Depends(get_db)):
     url_obj = get_url_by_code(db, short_code)
     if not url_obj:
@@ -49,20 +47,20 @@ def retrieve_url(short_code: str, db: Session = Depends(get_db)):
     return url_obj
 
 # 3. Update short URL
-@app.put("/update-url-by-shorten-code/{short_code}", response_model=URLInfo)
+@app.put("/shorten/{code}", response_model=URLInfo)
 def update_shortened_url(short_code: str, payload: URLUpdate, db: Session = Depends(get_db)):
     url_obj = update_url(db, short_code, str(payload.url))
     if not url_obj:
         raise HTTPException(status_code=404, detail="Short URL not found")
     return url_obj
 
-@app.delete("/delete-url-by-shorten-code/{short_code}", status_code=204)
+@app.delete("/shorten/{code}", status_code=204)
 def delete_shortened_url(short_code: str, db: Session = Depends(get_db)):
     deleted = delete_url(db, short_code)
     if not deleted:
         raise HTTPException(status_code=404, detail="Short URL not found")
 
-@app.get("/get-shorten-url-stats/{short_code}", response_model=URLStats)
+@app.get("/shorten/{code}/stats", response_model=URLStats)
 def stats(short_code: str, db: Session = Depends(get_db)):
     url_obj = get_url_stats(db, short_code)
     if not url_obj:
