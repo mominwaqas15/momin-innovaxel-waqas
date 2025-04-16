@@ -31,3 +31,11 @@ def update_url(db: Session, short_code: str, new_url: str) -> URL | None:
         db.refresh(url_obj)
         return url_obj
     return None
+
+def delete_url(db: Session, short_code: str) -> bool:
+    url_obj = get_url_by_code(db, short_code)
+    if url_obj:
+        db.delete(url_obj)
+        db.commit()
+        return True
+    return False  
