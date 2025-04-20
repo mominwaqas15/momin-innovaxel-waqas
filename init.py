@@ -46,7 +46,6 @@ def retrieve_url(short_code: str, db: Session = Depends(get_db)):
     increment_access_count(db, url_obj)
     return url_obj
 
-# 3. Update short URL
 @app.put("/shorten/{code}", response_model=URLInfo)
 def update_shortened_url(short_code: str, payload: URLUpdate, db: Session = Depends(get_db)):
     url_obj = update_url(db, short_code, str(payload.url))
