@@ -69,26 +69,28 @@ App will be available at: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## 📬 API Endpoints
 
-| Method     | Endpoint                                     | Description                                    |
-| ---------- | -------------------------------------------- | ---------------------------------------------- |
-| `POST`   | `/shorten-url`                             | Create a new short URL                         |
-| `GET`    | `/get-url-by-shorten-code/{short_code}`    | Retrieve original URL + increment access count |
-| `PUT`    | `/update-url-by-shorten-code/{short_code}` | Update original URL                            |
-| `DELETE` | `/delete-url-by-shorten-code/{short_code}` | Delete a short URL                             |
-| `GET`    | `/get-shorten-url-stats/{short_code}`      | Get stats (`access_count`, timestamps, etc.) |
+| Method   | Endpoint                               | Description                                    |
+|----------|----------------------------------------|------------------------------------------------|
+| `POST`   | `/shorten`                             | Create a new short URL                         |
+| `GET`    | `/shorten/{code}`                      | Retrieve original URL and increment access     |
+| `PUT`    | `/shorten/{code}`                      | Update the long/original URL                   |
+| `DELETE` | `/shorten/{code}`                      | Delete a short URL                             |
+| `GET`    | `/shorten/{code}/stats`                | Get stats: access count, timestamps, etc.      |
 
 ---
 
-## 🧪 Sample Request (JSON)
+## 🧪 Sample Requests & Responses
 
-### Create Short URL
+### 🔗 Create Short URL
 
-**POST** `/shorten-url`
+**POST** `/shorten`
 
+**Request:**
 ```json
 {
   "url": "https://example.com/very/long/url"
 }
+
 ```
 
 ---
